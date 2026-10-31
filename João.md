@@ -1,42 +1,46 @@
 
-# Estágios UniSenai - Algoritmo de Match e Interfaces do Service
+# Diagrama de Sequência - Conciliação de Competências UniSenai
 
 ```mermaid
-flowchart TD
-    A([Início]) --> B[Aluno acessa a plataforma UniSenai]
-    B --> C[Realiza cadastro ou login]
-    C --> D[Preenche perfil profissional]
+sequenceDiagram
+    actor Estudante
+    participant Plataforma as Plataforma UniSenai
+    participant Perfil as Serviço de Perfil
+    participant Vagas as Serviço de Vagas
+    participant Match as Algoritmo de Match
+    participant Empresa
 
-    D --> E[Informa habilidades, interesses e formação]
-    E --> F[Empresas cadastram suas vagas de estágio]
+    Estudante->>Plataforma: Acessa a plataforma
+    Plataforma->>Perfil: Solicita perfil de competências
+    Perfil-->>Plataforma: Retorna competências do estudante
 
-    F --> G[Algoritmo de Match]
-    E --> G
+    Estudante->>Plataforma: Atualiza habilidades e formação
+    Plataforma->>Perfil: Salva informações atualizadas
+    Perfil-->>Plataforma: Confirma atualização
 
-    G --> H[Analisa compatibilidade entre aluno e vaga]
-    H --> I{Compatibilidade encontrada?}
+    Plataforma->>Vagas: Solicita vagas industriais disponíveis
+    Vagas-->>Plataforma: Retorna requisitos das vagas
 
-    I -->|Sim| J[Gerar recomendações de vagas]
-    I -->|Não| K[Informar ausência de vagas compatíveis]
+    Plataforma->>Match: Envia perfil e requisitos das vagas
+    activate Match
 
-    K --> L[Atualizar perfil ou aguardar novas vagas]
-    L --> G
+    Match->>Match: Analisa competências do estudante
+    Match->>Match: Compara com requisitos das vagas
+    Match->>Match: Calcula nível de compatibilidade
 
-    J --> M[Interface do Service apresenta os resultados]
-    M --> N[Aluno visualiza as oportunidades]
-    N --> O{Aluno tem interesse na vaga?}
+    alt Existe compatibilidade
+        Match-->>Plataforma: Retorna vagas compatíveis e pontuações
+        Plataforma-->>Estudante: Apresenta vagas recomendadas
 
-    O -->|Sim| P[Realizar candidatura]
-    O -->|Não| Q[Visualizar outras recomendações]
+        Estudante->>Plataforma: Demonstra interesse na vaga
+        Plataforma->>Empresa: Encaminha candidatura
+        Empresa-->>Plataforma: Retorna status da candidatura
+        Plataforma-->>Estudante: Informa status da candidatura
 
-    Q --> N
-    P --> R[Empresa recebe candidatura]
-    R --> S[Empresa avalia o candidato]
-    S --> T{Candidato aprovado?}
+    else Não existe compatibilidade
+        Match-->>Plataforma: Informa ausência de compatibilidade
+        Plataforma-->>Estudante: Apresenta mensagem e orientações
+    end
 
-    T -->|Sim| U[Aluno é selecionado para o estágio]
-    T -->|Não| V[Aluno recebe retorno]
-    
-    U --> W([Fim])
-    V --> W
+    deactivate Match
 ```
