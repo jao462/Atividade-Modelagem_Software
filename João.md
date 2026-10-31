@@ -1,46 +1,21 @@
 
-# Diagrama de Sequência - Conciliação de Competências UniSenai
+# Conciliação de Competências - UniSenai
 
 ```mermaid
 sequenceDiagram
     actor Estudante
-    participant Plataforma as Plataforma UniSenai
-    participant Perfil as Serviço de Perfil
-    participant Vagas as Serviço de Vagas
-    participant Match as Algoritmo de Match
-    participant Empresa
+    participant Sistema
+    participant Algoritmo
+    participant Vagas
 
-    Estudante->>Plataforma: Acessa a plataforma
-    Plataforma->>Perfil: Solicita perfil de competências
-    Perfil-->>Plataforma: Retorna competências do estudante
+    Estudante->>Sistema: Envia seu perfil e competências
+    Sistema->>Algoritmo: Envia as competências do estudante
+    Sistema->>Vagas: Busca vagas disponíveis
+    Vagas-->>Sistema: Retorna os requisitos das vagas
 
-    Estudante->>Plataforma: Atualiza habilidades e formação
-    Plataforma->>Perfil: Salva informações atualizadas
-    Perfil-->>Plataforma: Confirma atualização
+    Sistema->>Algoritmo: Envia os requisitos das vagas
+    Algoritmo->>Algoritmo: Compara as competências com as vagas
+    Algoritmo-->>Sistema: Retorna o resultado da comparação
 
-    Plataforma->>Vagas: Solicita vagas industriais disponíveis
-    Vagas-->>Plataforma: Retorna requisitos das vagas
-
-    Plataforma->>Match: Envia perfil e requisitos das vagas
-    activate Match
-
-    Match->>Match: Analisa competências do estudante
-    Match->>Match: Compara com requisitos das vagas
-    Match->>Match: Calcula nível de compatibilidade
-
-    alt Existe compatibilidade
-        Match-->>Plataforma: Retorna vagas compatíveis e pontuações
-        Plataforma-->>Estudante: Apresenta vagas recomendadas
-
-        Estudante->>Plataforma: Demonstra interesse na vaga
-        Plataforma->>Empresa: Encaminha candidatura
-        Empresa-->>Plataforma: Retorna status da candidatura
-        Plataforma-->>Estudante: Informa status da candidatura
-
-    else Não existe compatibilidade
-        Match-->>Plataforma: Informa ausência de compatibilidade
-        Plataforma-->>Estudante: Apresenta mensagem e orientações
-    end
-
-    deactivate Match
+    Sistema-->>Estudante: Mostra as vagas compatíveis
 ```
