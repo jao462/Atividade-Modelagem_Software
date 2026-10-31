@@ -1,0 +1,19 @@
+@startuml
+
+actor Sensor
+participant "Gateway" as GT
+participant "Plataforma IoT" as Iot
+participant "Analisador Preditivo" as AP
+participant "Gestor de Manutenção" as GM
+participant "Sistema de Ordens de Serviço" as SOS
+
+Sensor -> GT : envia dados do sensor
+GT -> Iot : Publica telemetria
+Iot -> AP : Encaminha dados para análise
+AP -> AP : Avalia padrões e tendencias de falha
+AP -> GM : Notifica necessidade de manutençao preventiva 
+GM -> SOS : Cria ordem de serviço
+SOS -> GM : Confirma criação da OS
+SOS -> AP : Atualiza status da manutenção
+AP -> Iot : Registra telemetria normal
+@enduml
