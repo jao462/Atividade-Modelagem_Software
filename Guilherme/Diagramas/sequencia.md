@@ -47,6 +47,6 @@ sequenceDiagram
 
         Analise-->>Ingestao: AnaliseConcluidaDTO
         Ingestao-->>API: RespostaDTO(200, resultado)
-```
         API-->>Sensor: ConfirmacaoRecebimentoDTO
     end
+```
