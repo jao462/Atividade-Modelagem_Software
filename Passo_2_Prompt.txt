@@ -1,0 +1,19 @@
+Você é um engenheiro de resistência e SRE (Site Reliability Engineer).
+
+Meu projeto (Manutenção preventiva de IoT industrial) possui as seguintes entidades:
+- Operador;
+- Máquina;
+- Sensor;
+- Interface Gráfica;
+- Banco de Dados;
+
+E nesse projeto ocorre o seguinte fluxo principal:
+- Sensor coleta dados da Máquina;
+- Sensor envia esses dados para o Banco de Dados;
+- Sensor envia esses dados para a Interface Gráfica para leituras em tempo real;
+- Operador acessa Interface Gráfica para fazer a leitura dos dados em tempo real;
+- Operador acessa Interface Gráfica para ler dados históricos armazenados no banco de dados;
+
+Agora, você deve mapear este fluxo em um diagrama de sequência UML, utilizando a ferramenta de documentação Mermaid com sintaxe sequenceDiagram. Nesse mapeamento, você deve incluir cenários de falhas realistas, com a utilização de blocos alt/else para tratamento de exceções e retentivas assíncronas para mensageria.
+
+Agradeço desde já.
