@@ -1,0 +1,52 @@
+C4Container
+    title Arquitetura IoT de Manutenção Preventiva - C4 Nível 2
+
+    System_Ext(maquinas, "Máquinas e Sensores", "Equipamentos industriais responsáveis pela transmissão de dados.")
+
+    Container_Boundary(plataforma, "Plataforma IoT de Manutenção Preventiva") {
+
+        Container(gateway, "Gateway de Borda", "Agente MQTT", "Coleta e converte dados dos equipamentos para MQTT. Mantém buffer temporário em caso de falha de conexão.")
+
+        Container(emqx, "Broker MQTT", "EMQX Cluster", "Ponto de entrada dos dados dos sensores. Recebe mensagens MQTT e encaminha eventos ao Kafka por meio do Kafka Sink.")
+
+        Container(kafka, "Barramento de Mensagens", "Apache Kafka Cluster", "Distribui eventos de telemetria e alertas entre os microsserviços por meio de tópicos.")
+
+        Container(ingestao, "Serviço de Ingestão", "Node.js", "Consome eventos do Kafka, valida e normaliza os dados dos sensores.")
+
+        ContainerDb(timescale, "Banco de Dados de Telemetria", "TimescaleDB / PostgreSQL HA", "Armazena informações atuais e históricas dos sensores, permitindo consultas e comparações temporais.")
+
+        Container(predicao, "Serviço de Predição", "Python / Machine Learning", "Analisa dados atuais e históricos para identificar anomalias e prever possíveis falhas nas máquinas.")
+
+        ContainerDb(banco_predicoes, "Banco de Predições", "PostgreSQL HA", "Armazena resultados das análises, probabilidades de falhas e alertas.")
+
+        Container(api_principal, "API do Sistema Principal", "Node.js / REST", "Gerencia informações operacionais, recebe eventos de telemetria e alertas e integra processos de manutenção.")
+
+        ContainerDb(banco_operacional, "Banco Operacional", "PostgreSQL HA", "Armazena máquinas, configurações, usuários e ordens de serviço.")
+
+        Container(api_consulta, "API de Consulta", "Node.js / REST", "Disponibiliza dados atuais e históricos para consultas do sistema principal.")
+
+        Container(grafana, "Painel de Monitoramento", "Grafana", "Exibe informações em tempo real, históricos, indicadores e resultados das predições.")
+    }
+
+    Rel(maquinas, gateway, "Transmite dados dos sensores", "Protocolos industriais")
+
+    Rel(gateway, emqx, "Publica telemetria", "MQTT / TLS")
+
+    Rel(emqx, kafka, "Encaminha mensagens recebidas para os tópicos", "Kafka Sink")
+
+    Rel(kafka, ingestao, "Entrega eventos de telemetria", "Kafka Consumer")
+    Rel(ingestao, timescale, "Armazena dados normalizados", "SQL / PostgreSQL")
+
+    Rel(kafka, predicao, "Entrega eventos para análise", "Kafka Consumer")
+    Rel(predicao, timescale, "Consulta dados históricos", "SQL / PostgreSQL")
+    Rel(predicao, banco_predicoes, "Armazena resultados das análises", "SQL")
+    Rel(predicao, kafka, "Publica previsões e alertas", "Kafka Producer")
+
+    Rel(kafka, api_principal, "Entrega telemetria e alertas", "Kafka Consumer")
+    Rel(api_principal, banco_operacional, "Consulta e atualiza dados operacionais", "SQL")
+
+    Rel(api_principal, api_consulta, "Solicita dados históricos", "HTTPS / REST")
+    Rel(api_consulta, timescale, "Consulta séries temporais", "SQL / PostgreSQL")
+
+    Rel(grafana, timescale, "Consulta dados dos sensores", "PostgreSQL Datasource")
+    Rel(grafana, banco_predicoes, "Consulta resultados das predições", "PostgreSQL Datasource")
