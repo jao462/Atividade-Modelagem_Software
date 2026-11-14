@@ -1,4 +1,4 @@
-´´´mermaid
+```mermaid
 C4Container
     title Arquitetura IoT de Manutenção Preventiva - C4 Nível 2
 
@@ -47,8 +47,9 @@ C4Container
     Rel(api_principal, banco_operacional, "Consulta e atualiza dados operacionais", "SQL")
 
     Rel(api_principal, api_consulta, "Solicita dados históricos", "HTTPS / REST")
-´´´
     Rel(api_consulta, timescale, "Consulta séries temporais", "SQL / PostgreSQL")
 
     Rel(grafana, timescale, "Consulta dados dos sensores", "PostgreSQL Datasource")
     Rel(grafana, banco_predicoes, "Consulta resultados das predições", "PostgreSQL Datasource")
+
+```
