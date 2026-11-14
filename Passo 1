@@ -1,0 +1,57 @@
+```mermaid
+C4Container
+    title Arquitetura IoT de Manutencao Preventiva - C4 Nivel 2
+
+    System_Ext(maquinas, "Maquinas e Sensores", "Equipamentos industriais que transmitem dados.")
+
+    Container_Boundary(plataforma, "Plataforma IoT") {
+
+        Container(emqx, "Broker MQTT", "EMQX Cluster", "Recebe os dados dos sensores por MQTT e encaminha eventos ao Kafka.")
+
+        Container(kafka, "Barramento de Mensagens", "Apache Kafka Cluster", "Distribui eventos de telemetria e alertas entre os microsservicos.")
+
+        Container(ingestao, "Servico de Ingestao", "Node.js", "Consome, valida e normaliza os dados recebidos pelo Kafka.")
+
+        ContainerDb(timescale, "Banco de Telemetria", "TimescaleDB", "Armazena informacoes atuais e historicas dos sensores.")
+
+        Container(predicao, "Servico de Predicao", "Python / Machine Learning", "Analisa dados atuais e historicos para prever possiveis falhas.")
+
+        ContainerDb(banco_predicoes, "Banco de Predicoes", "PostgreSQL", "Armazena resultados das analises e probabilidades de falhas.")
+
+        Container(api_principal, "API do Sistema Principal", "Node.js / REST", "Gerencia informacoes operacionais, telemetria, alertas e processos de manutencao.")
+
+        ContainerDb(banco_operacional, "Banco Operacional", "PostgreSQL", "Armazena maquinas, configuracoes, usuarios e ordens de servico.")
+
+        Container(api_consulta, "API de Consulta", "Node.js / REST", "Disponibiliza dados atuais e historicos para consultas.")
+
+        Container(grafana, "Painel de Monitoramento", "Grafana", "Exibe informacoes em tempo real, historicos e resultados das predicoes.")
+    }
+
+    Rel(maquinas, emqx, "Transmite dados dos sensores", "MQTT / TLS")
+
+    Rel(emqx, kafka, "Encaminha mensagens recebidas", "Kafka Data Integration")
+
+    Rel(kafka, ingestao, "Entrega eventos de telemetria", "Kafka Consumer")
+
+    Rel(ingestao, timescale, "Armazena dados normalizados", "SQL")
+
+    Rel(kafka, predicao, "Entrega dados para analise", "Kafka Consumer")
+
+    Rel(predicao, timescale, "Consulta dados historicos", "SQL")
+
+    Rel(predicao, banco_predicoes, "Armazena resultados das analises", "SQL")
+
+    Rel(predicao, kafka, "Publica previsoes e alertas", "Kafka Producer")
+
+    Rel(kafka, api_principal, "Entrega telemetria e alertas", "Kafka Consumer")
+
+    Rel(api_principal, banco_operacional, "Consulta e atualiza dados operacionais", "SQL")
+
+    Rel(api_principal, api_consulta, "Solicita dados historicos", "HTTPS / REST")
+
+    Rel(api_consulta, timescale, "Consulta series temporais", "SQL")
+
+    Rel(grafana, timescale, "Consulta dados dos sensores", "PostgreSQL Datasource")
+
+    Rel(grafana, banco_predicoes, "Consulta resultados das predicoes", "PostgreSQL Datasource")
+    ```
